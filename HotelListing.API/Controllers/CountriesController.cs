@@ -9,7 +9,7 @@ using HotelListing.API.Data;
 
 namespace HotelListing.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("hotelliste/[controller]")]
     [ApiController]
     public class CountriesController : ControllerBase
     {
