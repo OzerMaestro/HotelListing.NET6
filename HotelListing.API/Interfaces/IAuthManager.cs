@@ -5,7 +5,7 @@ namespace HotelListing.API.Interfaces
 {
     public interface IAuthManager
     {
-        Task<IEnumerable<IdentityError>> Register(ApiUserDto userDto);
+        Task<IEnumerable<IdentityError>> Register(UserDto userDto);
 
         Task<bool> Login(LoginDto loginDto);
     }

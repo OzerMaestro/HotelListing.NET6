@@ -3,7 +3,7 @@ using RequiredAttribute = Microsoft.Build.Framework.RequiredAttribute;
 
 namespace HotelListing.API.Models.Users
 {
-    public class ApiUserDto : LoginDto
+    public class UserDto : LoginDto
     {
         [Required] 
         public string FirstName { get; set; }
