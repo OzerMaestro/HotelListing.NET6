@@ -10,6 +10,7 @@ using HotelListing.API.Interfaces;
 using AutoMapper;
 using HotelListing.API.Models.Country;
 using HotelListing.API.Models.Hotel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelListing.API.Controllers
 {
