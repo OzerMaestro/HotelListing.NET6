@@ -4,6 +4,7 @@ using HotelListing.API.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 
 namespace HotelListing.API.Controllers
 {
@@ -30,7 +31,7 @@ namespace HotelListing.API.Controllers
 
             if (messages.Any())
             {
-                foreach(var message in messages)
+                foreach (var message in messages)
                 {
                     ModelState.AddModelError(message.Code, message.Description);
                 }
@@ -49,6 +50,24 @@ namespace HotelListing.API.Controllers
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
             var authResponse = await _authManager.Login(loginDto);
+
+            if (authResponse == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(authResponse);
+        }
+
+        //POST: api/Auth/refreshtoken
+        [HttpPost]
+        [Route("refreshtoken")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> RefreshToken([FromBody] AuthResponseDto request)
+        {
+            var authResponse = await _authManager.VerifyRefreshToken(request);
 
             if (authResponse == null)
             {

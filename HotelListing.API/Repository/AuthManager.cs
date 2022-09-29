@@ -52,7 +52,8 @@ namespace HotelListing.API.Repository
             return new AuthResponseDto
             {
                 Token = token,
-                UserId = _user.Id
+                UserId = _user.Id,
+                RefreshToken = await CreateRefreshToken()
             };
         }
 
@@ -72,19 +73,19 @@ namespace HotelListing.API.Repository
 
         }
 
-        public async Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto authResponseDto)
+        public async Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto request)
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(authResponseDto.Token);
+            var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
             var username = tokenContent.Claims.ToList().FirstOrDefault(q => q.Type == JwtRegisteredClaimNames.Email)?.Value;
             _user = await _userManager.FindByNameAsync(username);
 
-            if(_user == null)
+            if (_user == null || _user.Id != request.UserId)
             {
                 return null;
             }
 
-            var isValidRefreshToken = await _userManager.VerifyUserTokenAsync(_user, _loginProvider, _refreshToken, authResponseDto.RefreshToken);
+            var isValidRefreshToken = await _userManager.VerifyUserTokenAsync(_user, _loginProvider, _refreshToken, request.RefreshToken);
 
             if (isValidRefreshToken)
             {
@@ -93,9 +94,11 @@ namespace HotelListing.API.Repository
                 {
                     Token = token,
                     UserId = _user.Id,
-                    RefreshToken = _refreshToken,
+                    RefreshToken = await CreateRefreshToken(),
                 };
             }
+            await _userManager.UpdateSecurityStampAsync(_user);
+            return null;
         }
 
         private async Task<string> GenerateToken()
