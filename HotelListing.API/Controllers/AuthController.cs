@@ -13,10 +13,12 @@ namespace HotelListing.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthManager _authManager;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthManager authManager)
+        public AuthController(IAuthManager authManager, ILogger<AuthController> logger)
         {
             this._authManager = authManager;
+            this._logger = logger;
         }
 
         //POST: api/Auth/register
@@ -27,6 +29,8 @@ namespace HotelListing.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> Register([FromBody] UserDto apiUserDto)
         {
+            _logger.LogInformation($"Registration attempt for {apiUserDto.Email}");
+
             var messages = await _authManager.Register(apiUserDto);
 
             if (messages.Any())
@@ -39,6 +43,8 @@ namespace HotelListing.API.Controllers
             }
 
             return Ok();
+
+
         }
 
         //POST: api/Auth/login
@@ -49,6 +55,7 @@ namespace HotelListing.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
+            _logger.LogInformation($"Login attemp for {loginDto.Email}");
             var authResponse = await _authManager.Login(loginDto);
 
             if (authResponse == null)
@@ -58,6 +65,7 @@ namespace HotelListing.API.Controllers
 
             return Ok(authResponse);
         }
+
 
         //POST: api/Auth/refreshtoken
         [HttpPost]
