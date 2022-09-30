@@ -11,6 +11,7 @@ using AutoMapper;
 using HotelListing.API.Models.Country;
 using HotelListing.API.Models.Hotel;
 using Microsoft.AspNetCore.Authorization;
+using HotelListing.API.Models;
 
 namespace HotelListing.API.Controllers
 {
@@ -18,29 +19,37 @@ namespace HotelListing.API.Controllers
     [ApiController]
     public class HotelsController : ControllerBase
     {
-        private readonly IHotelRepository hotelRepository;
+        private readonly IHotelRepository _hotelRepository;
         private readonly IMapper _mapper;
 
         public HotelsController(IHotelRepository hotelRepository, IMapper mapper)
         {
-            this.hotelRepository = hotelRepository;
+            this._hotelRepository = hotelRepository;
             this._mapper = mapper;
+        }
+
+        // GET: api/Hotels/GetAll
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
+        {
+            var hotels = await _hotelRepository.GetAllAsync();
+            var records = _mapper.Map<List<HotelDto>>(hotels);
+            return Ok(records);
         }
 
         // GET: api/Hotels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotels()
+        public async Task<ActionResult<PagedResult<HotelDto>>> GetPagedHotels([FromQuery] QueryParameters queryParameters)
         {
-            var hotels = await hotelRepository.GetAllAsync();
-            var records = _mapper.Map<List<HotelDto>>(hotels);
-            return Ok(records);
+            var pagedHotelsResult = await _hotelRepository.GetAllAsync<HotelDto>(queryParameters);
+            return Ok(pagedHotelsResult);
         }
 
         // GET: api/Hotels/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HotelDto>> GetHotel(int id)
         {
-            var hotel = await hotelRepository.GetAsync(id);
+            var hotel = await _hotelRepository.GetAsync(id);
 
             if (hotel == null)
             {
@@ -51,7 +60,6 @@ namespace HotelListing.API.Controllers
         }
 
         // PUT: api/Hotels/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHotel(int id, HotelDto hotelDto)
         {
@@ -60,7 +68,7 @@ namespace HotelListing.API.Controllers
                 return BadRequest("Wrong ID on hotel, please choose correct ID.");
             }
 
-            var hotel = await hotelRepository.GetAsync(id);
+            var hotel = await _hotelRepository.GetAsync(id);
             if (hotel == null)
             {
                 return NotFound();
@@ -70,7 +78,7 @@ namespace HotelListing.API.Controllers
 
             try
             {
-                await hotelRepository.UpdateAsync(hotel);
+                await _hotelRepository.UpdateAsync(hotel);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -88,12 +96,11 @@ namespace HotelListing.API.Controllers
         }
 
         // POST: api/Hotels
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Hotel>> PostHotel(CreateHotelDto hotelDto)
         {
             var hotel = _mapper.Map<Hotel>(hotelDto);
-            await hotelRepository.AddAsync(hotel);
+            await _hotelRepository.AddAsync(hotel);
 
             return CreatedAtAction("GetHotel", new { id = hotel.HotelId }, hotel);
         }
@@ -102,20 +109,20 @@ namespace HotelListing.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHotel(int id)
         {
-            var hotel = await hotelRepository.GetAsync(id);
+            var hotel = await _hotelRepository.GetAsync(id);
             if (hotel == null)
             {
                 return NotFound();
             }
 
-            await hotelRepository.DeleteAsync(id);
+            await _hotelRepository.DeleteAsync(id);
 
             return NoContent();
         }
 
         private async Task<bool> HotelExistsAsync(int id)
         {
-            return await hotelRepository.Exists(id);
+            return await _hotelRepository.Exists(id);
         }
     }
 }
