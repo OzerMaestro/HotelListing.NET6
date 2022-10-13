@@ -4,6 +4,7 @@ using HotelListing.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelListing.API.Migrations
 {
     [DbContext(typeof(HotelListingDbContext))]
-    partial class HotelListingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221010141257_RefactoringUpdate")]
+    partial class RefactoringUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,9 +33,11 @@ namespace HotelListing.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryId"), 1L, 1);
 
                     b.Property<string>("CountryName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShortName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CountryId");
@@ -70,12 +74,14 @@ namespace HotelListing.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotelId"), 1L, 1);
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Rating")
@@ -134,9 +140,11 @@ namespace HotelListing.API.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -214,15 +222,15 @@ namespace HotelListing.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ca876716-5a5b-4861-ab06-7fbaf40fa815",
-                            ConcurrencyStamp = "c743b424-13bb-46e4-8573-afb05a0a2ab6",
+                            Id = "e52af927-6434-4ff5-b7d4-4df206de3d2c",
+                            ConcurrencyStamp = "fa798809-ce28-4fdf-b744-6798e1afcb97",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "47caa569-f0ec-4b68-8f5a-cd5f899ecd9a",
-                            ConcurrencyStamp = "4a89b226-9416-4da9-b247-c21582cfd457",
+                            Id = "fdc0e5f8-a850-4ce1-a916-4cd29d51ab05",
+                            ConcurrencyStamp = "e5b80c81-8ac7-488f-b5a1-23d44f8d3929",
                             Name = "User",
                             NormalizedName = "USER"
                         });
